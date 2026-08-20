@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WEST 45 — Creative Studio</title>
+  <meta name="description" content="WEST 45 is an independent creative studio focused on visual storytelling, photography, branding and digital experiences.">
+
+  <!-- Theme is applied here, before CSS/paint, so there is no flash of the wrong theme -->
+  <script>
+    (function () {
+      try {
+        var stored = localStorage.getItem('west45-theme');
+        var theme = stored === 'light' || stored === 'dark'
+          ? stored
+          : (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+        document.documentElement.setAttribute('data-theme', theme);
+      } catch (e) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      }
+    })();
+  </script>
+
+  <!-- Fonts: condensed display face for editorial headlines, clean sans for body, mono for utility labels -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&amp;family=Archivo:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+ 
+    <link rel="stylesheet" href="style.css?v=6">
+</head>
+<body>
+
+  <!-- ===================== LOADER ===================== -->
+  <div class="loader" id="loader" aria-hidden="true">
+    <div class="loader-logo">
+      <img src="assets/images/hero.png" alt="WEST 45" class="loader-logo-img">
+    </div>
+  </div>
+
+  <!-- ===================== CUSTOM CURSOR ===================== -->
+  <div class="cursor" id="cursor" aria-hidden="true">
+    <span class="cursor-label">VIEW</span>
+  </div>
+
+  <!-- ===================== HEADER ===================== -->
+  <header class="site-header" id="siteHeader">
+    <a href="#home" class="logo" id="logo" data-i18n-aria="logo.ariaLabel" aria-label="WEST 45 — anasayfa">
+      <img src="assets/images/hero.png" alt="WEST 45" class="logo-img">
+    </a>
+
+    <div class="header-right">
+      <nav class="main-nav" id="mainNav">
+        <a href="#home" class="nav-link" data-cursor="hover" data-i18n="nav.home">ANASAYFA</a>
+        <a href="#work" class="nav-link" data-cursor="hover" data-i18n="nav.work">ÇALIŞMALARIMIZ</a>
+        <a href="#services" class="nav-link" data-cursor="hover" data-i18n="nav.services">HİZMETLERİMİZ</a>
+        <a href="#about" class="nav-link" data-cursor="hover" data-i18n="nav.about">HAKKIMIZDA</a>
+        <a href="#contact" class="nav-link" data-cursor="hover" data-i18n="nav.contact">İLETİŞİM</a>
+      </nav>
+
+      <div class="header-controls">
+        <div class="lang-toggle" role="group" data-i18n-aria="lang.groupLabel" aria-label="Dil seçimi">
+          <button type="button" class="lang-btn" data-lang="tr" data-cursor="hover" aria-pressed="true">TR</button>
+          <button type="button" class="lang-btn" data-lang="en" data-cursor="hover" aria-pressed="false">EN</button>
+        </div>
+
+        <button type="button" class="theme-toggle" id="themeToggle" data-cursor="hover" data-i18n-aria="theme.toggleLabel" aria-label="Tema değiştir" aria-pressed="false">
+          <span class="theme-toggle-track">
+            <span class="theme-toggle-thumb"></span>
+          </span>
+        </button>
+      </div>
+
+      <button class="nav-toggle" id="navToggle" aria-controls="mainNav" data-i18n-aria="nav.toggleLabel" aria-label="Menüyü aç" aria-expanded="false">
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </header>
+
+  <main id="top">
+
+    <!-- ===================== HERO ===================== -->
+    <section class="hero" id="home">
+      <div class="hero-bg" id="heroBg" aria-hidden="true"></div>
+
+      <div class="hero-inner">
+        <h1 class="hero-title" id="heroTitle">
+          <span class="line reveal-word" data-i18n="hero.line1">WE CREATE</span>
+          <span class="line reveal-word outline-word" data-i18n="hero.line2">VISUAL</span>
+          <span class="line reveal-word" data-i18n="hero.line3">IMPACT.</span>
+        </h1>
+
+        <div class="hero-meta reveal-word">
+          <span class="hero-tag" data-i18n="hero.tag1">CREATIVE STUDIO</span>
+          <span class="hero-tag">AKHISAR</span>
+        </div>
+      </div>
+
+      <div class="hero-image" id="heroImage">
+        <img src="assets/images/hero.png" alt="WEST 45 kampanya fotoğrafı" loading="eager" onerror="this.style.display='none'">
+      </div>
+
+      <div class="hero-scroll" aria-hidden="true">
+        <span>SCROLL</span>
+        <div class="scroll-line"></div>
+      </div>
+    </section>
+
+    <!-- ===================== PROJELERİMİZ ===================== -->
+    <section class="section work" id="work">
+      <div class="section-head">
+        <span class="eyebrow" data-i18n="work.eyebrow">01 — PROJELERİMİZ</span>
+        <h2 class="section-title" data-i18n="work.title" data-i18n-html>ÇALIŞMALARIMIZ</h2>
+      </div>
+
+      <div class="project-filters" id="projectFilters" role="group" data-i18n-aria="filter.groupLabel" aria-label="Proje filtrele">
+        <button type="button" class="filter-btn is-active" data-filter="all" data-cursor="hover" data-i18n="filter.all">TÜMÜ</button>
+        <button type="button" class="filter-btn" data-filter="web" data-cursor="hover" data-i18n="filter.web">WEB</button>
+        <button type="button" class="filter-btn" data-filter="branding" data-cursor="hover" data-i18n="filter.branding">MARKA</button>
+        <button type="button" class="filter-btn" data-filter="social" data-cursor="hover" data-i18n="filter.social">SOSYAL</button>
+      </div>
+
+      <!-- Project cards are rendered by renderProjects() in script.js from the
+           projects[] data model — see Phase 2 migration. -->
+      <div class="work-grid" id="workGrid"></div>
+    </section>
+
+    <!-- ===================== SERVICES ===================== -->
+    <section class="section services" id="services">
+      <div class="section-head">
+        <span class="eyebrow" data-i18n="services.eyebrow">02 — BİZ NE YAPARIZ</span>
+        <h2 class="section-title" data-i18n="services.title" data-i18n-html>HİZMETLERİMİZ</h2>
+      </div>
+
+      <!-- Service rows are rendered by renderServices() in script.js from the
+           services[] data model — see Phase 2 migration. -->
+      <div class="services-list" id="servicesList">
+        <div class="service-preview" id="servicePreview" aria-hidden="true">
+          <img id="servicePreviewImg" src="" alt="">
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== ABOUT ===================== -->
+    <section class="section about" id="about">
+      <div class="section-head">
+        <span class="eyebrow" data-i18n="about.eyebrow">03 — WEST 45 NEDİR</span>
+        <h2 class="section-title reveal-up" data-i18n="about.title" data-i18n-html>KISITLAMALARIN<br>DIŞINA ÇIK.</h2>
+      </div>
+
+      <p class="about-text reveal-up">
+        WEST 45 is an independent creative studio focused on visual storytelling,
+        photography, branding and digital experiences.
+      </p>
+    </section>
+
+    <!-- ===================== CONTACT ===================== -->
+    <section class="section contact" id="contact">
+      <div class="section-head">
+        <span class="eyebrow">04 — START A PROJECT</span>
+      </div>
+
+      <h2 class="contact-title reveal-up" data-i18n="contact.title" data-i18n-html>BİZİMLE ÇALIŞMAK<br>İSTER MİSİNİZ.</h2>
+
+      <a href="mailto:hello@west45.com" class="contact-mail reveal-up" data-cursor="hover">hello@west45.com</a>
+
+      <form class="contact-form reveal-up" id="contactForm" novalidate>
+        <div class="form-row">
+          <label for="cf-name" data-i18n="form.name.label">İsim</label>
+          <input type="text" id="cf-name" name="name" autocomplete="name" maxlength="80" required aria-describedby="cf-name-error">
+          <span class="form-error" id="cf-name-error" data-error-for="name" role="alert"></span>
+        </div>
+
+        <div class="form-row">
+          <label for="cf-email" data-i18n="form.email.label">E-posta</label>
+          <input type="email" id="cf-email" name="email" autocomplete="email" maxlength="120" required aria-describedby="cf-email-error">
+          <span class="form-error" id="cf-email-error" data-error-for="email" role="alert"></span>
+        </div>
+
+        <div class="form-row">
+          <label for="cf-company" data-i18n="form.company.label">Şirket <span class="form-optional" data-i18n="form.optional">(opsiyonel)</span></label>
+          <input type="text" id="cf-company" name="company" autocomplete="organization" maxlength="80">
+        </div>
+
+        <div class="form-row">
+          <label for="cf-service" data-i18n="form.service.label">Hizmet</label>
+          <select id="cf-service" name="service" required aria-describedby="cf-service-error">
+            <option value="" data-i18n="form.service.placeholder">Seçiniz</option>
+            <option value="web-design" data-i18n="form.service.webDesign">Web Tasarım</option>
+            <option value="branding" data-i18n="form.service.branding">Marka Kimliği</option>
+            <option value="social-media" data-i18n="form.service.socialMedia">Sosyal Medya</option>
+            <option value="other" data-i18n="form.service.other">Diğer</option>
+          </select>
+          <span class="form-error" id="cf-service-error" data-error-for="service" role="alert"></span>
+        </div>
+
+        <div class="form-row">
+          <label for="cf-message" data-i18n="form.message.label">Mesaj</label>
+          <textarea id="cf-message" name="message" rows="4" maxlength="1000" required aria-describedby="cf-message-error"></textarea>
+          <span class="form-error" id="cf-message-error" data-error-for="message" role="alert"></span>
+        </div>
+
+        <button type="submit" class="form-submit" data-i18n="form.submit">Gönder</button>
+
+        <p class="form-status" id="formStatus" role="status" aria-live="polite"></p>
+      </form>
+    </section>
+
+  </main>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer class="site-footer">
+    <div class="footer-logo">WEST 45</div>
+    <div class="footer-meta">
+      <span>© 2026 WEST 45</span>
+      <div class="footer-links">
+        <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" data-cursor="hover">INSTAGRAM</a>
+        <a href="https://behance.net" target="_blank" rel="noopener noreferrer" data-cursor="hover">BEHANCE</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ===================== PROJECT MODAL ===================== -->
+  <div class="project-modal" id="projectModal" aria-hidden="true">
+    <div class="project-modal-overlay" data-modal-close></div>
+    <div class="project-modal-dialog" id="projectModalDialog" role="dialog" aria-modal="true" aria-labelledby="projectModalTitle" tabindex="-1">
+      <button type="button" class="project-modal-close" data-modal-close data-i18n-aria="modal.close" aria-label="Kapat">×</button>
+
+      <div class="project-modal-media">
+        <img id="projectModalImage" src="" alt="">
+      </div>
+
+      <div class="project-modal-body">
+        <span class="project-modal-category" id="projectModalCategory"></span>
+        <h3 class="project-modal-title" id="projectModalTitle"></h3>
+        <p class="project-modal-description" id="projectModalDescription"></p>
+        <a class="project-modal-link" id="projectModalLink" href="#" target="_blank" rel="noopener noreferrer" data-i18n="modal.viewProject">Projeyi Görüntüle →</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js?v=8"></script>
+</body>
+</html>

@@ -1,0 +1,37 @@
+{
+  "name": "west-45-backend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "West 45 backend foundation",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "nodemon --legacy-watch --watch src src/app.js",
+    "db:check": "node -e \"require('dotenv').config(); const pool = require('./src/db/pool'); pool.query('SELECT 1 AS connected').then((result) => { console.log('PostgreSQL connection successful:', result.rows[0]); }).catch((error) => { console.error('PostgreSQL connection failed:', error.message || error.code || error.name); process.exitCode = 1; }).finally(() => pool.end());\"",
+    "db:migrate": "node src/db/migrate.js",
+    "db:seed": "node src/db/seed.js",
+    "test": "NODE_ENV=test jest --runInBand",
+    "auth:hash": "node src/scripts/hashPassword.js"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "bcryptjs": "^3.0.2",
+    "cors": "^2.8.5",
+    "express-rate-limit": "^8.1.0",
+    "express": "^5.1.0",
+    "helmet": "^8.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "pg": "^8.16.3",
+    "swagger-ui-express": "^5.0.1"
+  },
+  "devDependencies": {
+    "jest": "^30.0.5",
+    "nodemon": "^3.1.10",
+    "supertest": "^7.1.1"
+  },
+  "jest": {
+    "setupFiles": [
+      "<rootDir>/tests/setup.js"
+    ]
+  }
+}
