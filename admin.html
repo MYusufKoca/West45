@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>West45 Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&amp;family=Bebas+Neue&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="admin.css?v=1">
+</head>
+<body>
+  <main class="admin-shell">
+    <section class="login-view" id="loginView" aria-labelledby="loginTitle">
+      <div class="login-card">
+        <p class="eyebrow">WEST 45 — ADMIN</p>
+        <h1 id="loginTitle">SIGN IN</h1>
+        <p class="intro">Manage projects and services.</p>
+        <form id="loginForm" novalidate>
+          <label for="adminUsername">Username</label>
+          <input id="adminUsername" name="username" type="text" autocomplete="username" required>
+          <label for="adminPassword">Password</label>
+          <input id="adminPassword" name="password" type="password" autocomplete="current-password" required>
+          <button class="primary-button" type="submit">SIGN IN</button>
+          <p class="form-message" id="loginMessage" role="status" aria-live="polite"></p>
+        </form>
+      </div>
+    </section>
+
+    <section class="dashboard" id="dashboard" hidden aria-labelledby="dashboardTitle">
+      <aside class="sidebar">
+        <a class="brand" href="admin.html" aria-label="West45 admin home">WEST 45</a>
+        <nav class="admin-nav" aria-label="Admin navigation">
+          <button class="nav-button is-active" type="button" data-section="projects">PROJECTS</button>
+          <button class="nav-button" type="button" data-section="services">SERVICES</button>
+        </nav>
+        <button class="logout-button" id="logoutButton" type="button">LOG OUT</button>
+      </aside>
+
+      <div class="dashboard-content">
+        <header class="dashboard-header">
+          <div>
+            <p class="eyebrow">CONTENT MANAGEMENT</p>
+            <h1 id="dashboardTitle">PROJECTS</h1>
+          </div>
+          <button class="primary-button" id="createButton" type="button">NEW PROJECT</button>
+        </header>
+
+        <p class="form-message page-message" id="pageMessage" role="status" aria-live="polite"></p>
+        <div class="content-layout">
+          <section class="record-list" id="recordList" aria-live="polite" aria-busy="false"></section>
+          <section class="editor" id="editor" hidden aria-labelledby="editorTitle">
+            <div class="editor-head">
+              <h2 id="editorTitle">NEW PROJECT</h2>
+              <button class="text-button" id="cancelButton" type="button">CANCEL</button>
+            </div>
+            <form id="editorForm" novalidate></form>
+          </section>
+        </div>
+      </div>
+    </section>
+  </main>
+  <script src="admin.js?v=2"></script>
+</body>
+</html>
