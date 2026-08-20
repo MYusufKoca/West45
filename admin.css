@@ -11,6 +11,10 @@
   --font-mono: 'JetBrains Mono', monospace;
 }
 
+[hidden] {
+  display: none !important;
+}
+
 * { box-sizing: border-box; }
 body { margin: 0; min-width: 320px; background: var(--bg); color: var(--text); font-family: var(--font-body); }
 button, input, textarea, select { font: inherit; }
