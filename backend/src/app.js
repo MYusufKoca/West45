@@ -33,8 +33,7 @@ app.use(cors({
 app.use(express.json({ limit: '10kb' }));
 app.get('/api/docs.json', (req, res) => res.status(200).json(openapiSpec));
 app.get(/^\/api\/docs$/, (req, res) => res.redirect(308, '/api/docs/'));
-app.use('/api/docs', swaggerUi.serve);
-app.get('/api/docs/', swaggerUi.setup(openapiSpec, { customSiteTitle: 'West45 API Docs' }));
+app.use('/api/docs/', swaggerUi.serve, swaggerUi.setup(openapiSpec, { customSiteTitle: 'West45 API Docs' }));
 app.use('/api/projects', projectsRoutes);
 app.use('/api/services', servicesRoutes);
 app.use('/api/contact', contactRoutes);
