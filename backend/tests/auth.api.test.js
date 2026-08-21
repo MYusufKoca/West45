@@ -110,6 +110,30 @@ describe('Admin authentication', () => {
     expect(response.body).toEqual({ error: 'Too many requests' });
   });
 
+  test('rate limiting distinguishes client IPs behind one trusted proxy hop', async () => {
+    const originalTrustProxy = app.get('trust proxy');
+    app.set('trust proxy', 1);
+
+    try {
+      const clientA = '198.51.100.10, 203.0.113.10';
+      for (let index = 0; index < 6; index += 1) {
+        const response = await request(app)
+          .post('/api/auth/login')
+          .set('X-Forwarded-For', clientA)
+          .send({ username: 'wrong-admin', password: 'wrong-password' });
+        if (index === 5) expect(response.status).toBe(429);
+      }
+
+      const differentClient = await request(app)
+        .post('/api/auth/login')
+        .set('X-Forwarded-For', '198.51.100.11, 203.0.113.11')
+        .send({ username: 'wrong-admin', password: 'wrong-password' });
+      expect(differentClient.status).toBe(401);
+    } finally {
+      app.set('trust proxy', originalTrustProxy);
+    }
+  });
+
   test('keeps POST /api/contact public', async () => {
     const response = await request(app).post('/api/contact').set('X-Rate-Limit-Test-Key', 'auth-contact-test').send({
       name: 'Auth Test User', email: 'auth-contact@example.com', company: null,

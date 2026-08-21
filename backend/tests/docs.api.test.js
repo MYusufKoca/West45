@@ -7,11 +7,29 @@ const documentedPaths = [
 ];
 
 describe('OpenAPI documentation', () => {
-  test('GET /api/docs serves Swagger UI', async () => {
+  test('GET /api/docs redirects to the canonical trailing-slash URL', async () => {
     const response = await request(app).get('/api/docs');
+
+    expect(response.status).toBe(308);
+    expect(response.headers.location).toBe('/api/docs/');
+  });
+
+  test('GET /api/docs/ serves Swagger UI and its static assets', async () => {
+    const response = await request(app).get('/api/docs/');
 
     expect(response.status).toBe(200);
     expect(response.type).toMatch(/html/);
+
+    const assets = [
+      'swagger-ui.css',
+      'swagger-ui-bundle.js',
+      'swagger-ui-standalone-preset.js',
+      'swagger-ui-init.js',
+    ];
+    for (const asset of assets) {
+      const assetResponse = await request(app).get(`/api/docs/${asset}`);
+      expect(assetResponse.status).toBe(200);
+    }
   });
 
   test('GET /api/docs.json serves an OpenAPI specification', async () => {

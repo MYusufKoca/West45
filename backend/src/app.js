@@ -14,6 +14,11 @@ const authRoutes = require('./routes/authRoutes');
 const app = express();
 const port = process.env.PORT || 3000;
 
+// Render terminates public traffic at its reverse proxy before forwarding one hop to this process.
+// Trust only that nearest hop so req.ip can use the proxy-provided client address without trusting
+// an arbitrary-length X-Forwarded-For chain.
+if (process.env.NODE_ENV === 'production') app.set('trust proxy', 1);
+
 app.use(helmet({
   contentSecurityPolicy: process.env.NODE_ENV === 'production' ? undefined : false,
   hsts: process.env.NODE_ENV === 'production',
@@ -27,8 +32,9 @@ app.use(cors({
 }));
 app.use(express.json({ limit: '10kb' }));
 app.get('/api/docs.json', (req, res) => res.status(200).json(openapiSpec));
-app.get('/api/docs', swaggerUi.setup(openapiSpec, { customSiteTitle: 'West45 API Docs' }));
+app.get(/^\/api\/docs$/, (req, res) => res.redirect(308, '/api/docs/'));
 app.use('/api/docs', swaggerUi.serve);
+app.get('/api/docs/', swaggerUi.setup(openapiSpec, { customSiteTitle: 'West45 API Docs' }));
 app.use('/api/projects', projectsRoutes);
 app.use('/api/services', servicesRoutes);
 app.use('/api/contact', contactRoutes);

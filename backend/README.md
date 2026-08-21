@@ -28,7 +28,7 @@ Copy the printed hash into `ADMIN_PASSWORD_HASH` in `.env`.
 | Variable | Purpose |
 | --- | --- |
 | `PORT` | HTTP port; defaults to `3000`. |
-| `API_PUBLIC_URL` | OpenAPI server URL; defaults to `http://localhost:3000`. |
+| `API_PUBLIC_URL` | OpenAPI server URL; set to `https://west45.onrender.com` in production. Defaults to `http://localhost:3000`. |
 | `DATABASE_URL` | PostgreSQL connection string. |
 | `JWT_SECRET` | Long random secret used to sign admin tokens. |
 | `JWT_EXPIRES_IN` | JWT lifetime; defaults to `15m`. |
@@ -76,7 +76,7 @@ The development URL is `http://localhost:3000` by default.
 
 ## API Documentation
 
-- Swagger UI: `http://localhost:3000/api/docs`
+- Swagger UI: `http://localhost:3000/api/docs/` (`/api/docs` redirects here)
 - OpenAPI JSON: `http://localhost:3000/api/docs.json`
 
 Swagger UI includes an **Authorize** button. Paste an admin JWT without the `Bearer` prefix; the UI sends it as `Authorization: Bearer <token>` for protected operations.
@@ -139,9 +139,9 @@ The suite uses Jest and Supertest. Test-created database records are removed aft
 - Helmet security headers
 - CORS origin allowlist via `ALLOWED_ORIGINS`; no `*` wildcard
 - bcrypt password verification and short-lived JWTs
-- Separate IP rate limits for contact and login
+- Separate IP rate limits for contact and login; production trusts exactly one Render reverse-proxy hop for client IP detection
 - Generic client-facing errors; internal details stay in server logs
 
 ## Production Notes
 
-Set all secrets through the deployment environment, use HTTPS, and configure `ALLOWED_ORIGINS` with exact production origins. The built-in rate limit store is suitable for one process; use a shared store such as Redis before horizontally scaling.
+Set all secrets through the deployment environment, use HTTPS, configure `API_PUBLIC_URL=https://west45.onrender.com`, and configure `ALLOWED_ORIGINS` with exact production origins. The built-in rate limit store is suitable for one process; use a shared store such as Redis before horizontally scaling.
