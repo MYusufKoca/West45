@@ -3,7 +3,7 @@ const app = require('../src/app');
 
 const documentedPaths = [
   '/api/health', '/api/projects', '/api/projects/{id}', '/api/services',
-  '/api/services/{id}', '/api/contact', '/api/auth/login',
+  '/api/services/{id}', '/api/contact', '/api/contact/{id}', '/api/auth/login',
 ];
 
 describe('OpenAPI documentation', () => {
@@ -22,7 +22,7 @@ describe('OpenAPI documentation', () => {
     documentedPaths.forEach((path) => expect(response.body.paths).toHaveProperty(path));
   });
 
-  test('documents bearer authentication on all write endpoints only', async () => {
+  test('documents bearer authentication on protected admin endpoints', async () => {
     const response = await request(app).get('/api/docs.json');
     const paths = response.body.paths;
 
@@ -30,5 +30,7 @@ describe('OpenAPI documentation', () => {
     expect(paths['/api/services/{id}'].delete.security).toEqual([{ bearerAuth: [] }]);
     expect(paths['/api/projects'].get.security).toBeUndefined();
     expect(paths['/api/contact'].post.security).toBeUndefined();
+    expect(paths['/api/contact'].get.security).toEqual([{ bearerAuth: [] }]);
+    expect(paths['/api/contact/{id}'].get.security).toEqual([{ bearerAuth: [] }]);
   });
 });

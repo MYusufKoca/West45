@@ -1,6 +1,12 @@
 const express = require('express');
 const { rateLimit, ipKeyGenerator } = require('express-rate-limit');
-const { submitContactRequest } = require('../controllers/contactController');
+const {
+  submitContactRequest,
+  listContactRequests,
+  getContactRequest,
+  removeContactRequest,
+} = require('../controllers/contactController');
+const { requireAdminAuth } = require('../middleware/authMiddleware');
 
 const router = express.Router();
 const windowMs = Number.parseInt(process.env.CONTACT_RATE_LIMIT_WINDOW_MS, 10) || 60_000;
@@ -21,5 +27,8 @@ const contactRateLimiter = rateLimit({
 });
 
 router.post('/', contactRateLimiter, submitContactRequest);
+router.get('/', requireAdminAuth, listContactRequests);
+router.get('/:id', requireAdminAuth, getContactRequest);
+router.delete('/:id', requireAdminAuth, removeContactRequest);
 
 module.exports = router;

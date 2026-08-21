@@ -11,4 +11,34 @@ async function createContactRequest(contact) {
   return result.rows[0];
 }
 
-module.exports = { createContactRequest };
+async function getContactRequests() {
+  const result = await pool.query(`
+    SELECT id, name, email, company, service, message, created_at AS "createdAt"
+    FROM contact_requests
+    ORDER BY created_at DESC, id DESC
+  `);
+
+  return result.rows;
+}
+
+async function getContactRequestById(id) {
+  const result = await pool.query(`
+    SELECT id, name, email, company, service, message, created_at AS "createdAt"
+    FROM contact_requests
+    WHERE id = $1
+  `, [id]);
+
+  return result.rows[0] || null;
+}
+
+async function deleteContactRequest(id) {
+  const result = await pool.query('DELETE FROM contact_requests WHERE id = $1', [id]);
+  return result.rowCount > 0;
+}
+
+module.exports = {
+  createContactRequest,
+  getContactRequests,
+  getContactRequestById,
+  deleteContactRequest,
+};

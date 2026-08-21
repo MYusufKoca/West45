@@ -19,7 +19,7 @@ const openapiSpec = {
     { name: 'Health', description: 'Service health check' },
     { name: 'Projects', description: 'Portfolio projects' },
     { name: 'Services', description: 'Studio services' },
-    { name: 'Contact', description: 'Public contact requests' },
+    { name: 'Contact', description: 'Public contact form and protected admin message management' },
     { name: 'Authentication', description: 'Admin authentication' },
   ],
   paths: {
@@ -79,11 +79,26 @@ const openapiSpec = {
       },
     },
     '/api/contact': {
+      get: {
+        tags: ['Contact'], summary: 'List contact requests', security: protectedSecurity,
+        description: 'Admin-only list, ordered from newest to oldest.',
+        responses: { 200: response('Contact requests.', { type: 'array', items: { $ref: '#/components/schemas/ContactRequest' } }), 401: errorResponse('Unauthorized.'), 500: errorResponse('Internal server error.') },
+      },
       post: {
         tags: ['Contact'], summary: 'Submit a contact request',
         description: 'Public endpoint. Default limit: 5 requests per minute per IP; configure with CONTACT_RATE_LIMIT_MAX and CONTACT_RATE_LIMIT_WINDOW_MS. Extra request fields are rejected.',
         requestBody: { required: true, content: jsonContent({ $ref: '#/components/schemas/ContactInput' }) },
         responses: { 201: response('Contact request stored.', { $ref: '#/components/schemas/ContactCreated' }), 400: validationResponse(), 413: errorResponse('Payload too large.'), 429: errorResponse('Too many requests.'), 500: errorResponse('Internal server error.') },
+      },
+    },
+    '/api/contact/{id}': {
+      get: {
+        tags: ['Contact'], summary: 'Get a contact request', security: protectedSecurity, parameters: [idParameter('Positive contact request ID.')],
+        responses: { 200: response('Contact request found.', { $ref: '#/components/schemas/ContactRequest' }), 400: errorResponse('Invalid contact request ID.'), 401: errorResponse('Unauthorized.'), 404: errorResponse('Contact request not found.'), 500: errorResponse('Internal server error.') },
+      },
+      delete: {
+        tags: ['Contact'], summary: 'Delete a contact request', security: protectedSecurity, parameters: [idParameter('Positive contact request ID.')],
+        responses: { 204: response('Contact request deleted.'), 400: errorResponse('Invalid contact request ID.'), 401: errorResponse('Unauthorized.'), 404: errorResponse('Contact request not found.'), 500: errorResponse('Internal server error.') },
       },
     },
     '/api/auth/login': {
@@ -112,6 +127,7 @@ const openapiSpec = {
       Service: { type: 'object', required: ['id', 'nameTr', 'nameEn', 'previewImageUrl', 'displayOrder'], properties: { id: { type: 'integer', example: 1 }, nameTr: { type: 'string', maxLength: 120 }, nameEn: { type: 'string', maxLength: 120 }, previewImageUrl: { type: 'string', nullable: true, maxLength: 400 }, displayOrder: { type: 'integer', minimum: 0 } } },
       ServiceInput: { type: 'object', required: ['nameTr', 'nameEn', 'displayOrder'], properties: { nameTr: { type: 'string', minLength: 1, maxLength: 120 }, nameEn: { type: 'string', minLength: 1, maxLength: 120 }, previewImageUrl: { type: 'string', nullable: true, maxLength: 400, description: 'When supplied, must use http: or https:.' }, displayOrder: { type: 'integer', minimum: 0 } } },
       ContactInput: { type: 'object', additionalProperties: false, required: ['name', 'email', 'service', 'message'], properties: { name: { type: 'string', minLength: 2, maxLength: 80 }, email: { type: 'string', format: 'email', maxLength: 120 }, company: { type: 'string', nullable: true, minLength: 1, maxLength: 80 }, service: { type: 'string', enum: ['web-design', 'branding', 'social-media', 'other'] }, message: { type: 'string', minLength: 10, maxLength: 1000 } } },
+      ContactRequest: { type: 'object', required: ['id', 'name', 'email', 'company', 'service', 'message', 'createdAt'], properties: { id: { type: 'integer', example: 12 }, name: { type: 'string' }, email: { type: 'string', format: 'email' }, company: { type: 'string', nullable: true }, service: { type: 'string' }, message: { type: 'string' }, createdAt: { type: 'string', format: 'date-time' } } },
       ContactCreated: { type: 'object', required: ['id', 'message'], properties: { id: { type: 'integer' }, message: { type: 'string', example: 'Contact request received' } } },
       LoginInput: { type: 'object', required: ['username', 'password'], properties: { username: { type: 'string', minLength: 1 }, password: { type: 'string', minLength: 1, description: 'Administrator password. Do not store this value in client code.' } } },
       LoginSuccess: { type: 'object', required: ['token'], properties: { token: { type: 'string', description: 'Short-lived admin JWT.' } } },

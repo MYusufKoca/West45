@@ -105,16 +105,26 @@
     setMessage(target, messages[error.status] || 'A connection error occurred. Please try again later.');
   }
 
+  function isMessagesSection() { return activeSection === 'messages'; }
   function fieldsForActiveSection() { return activeSection === 'projects' ? projectFields : serviceFields; }
-  function endpointForActiveSection() { return activeSection === 'projects' ? '/api/projects' : '/api/services'; }
-  function titleForActiveSection() { return activeSection === 'projects' ? 'PROJECTS' : 'SERVICES'; }
+  function endpointForActiveSection() {
+    if (activeSection === 'projects') return '/api/projects';
+    if (activeSection === 'services') return '/api/services';
+    return '/api/contact';
+  }
+  function titleForActiveSection() {
+    if (activeSection === 'projects') return 'PROJECTS';
+    if (activeSection === 'services') return 'SERVICES';
+    return 'MESSAGES';
+  }
 
   function setActiveNavigation() {
     document.querySelectorAll('.nav-button').forEach((button) => {
       button.classList.toggle('is-active', button.dataset.section === activeSection);
     });
     dashboardTitle.textContent = titleForActiveSection();
-    createButton.textContent = activeSection === 'projects' ? 'NEW PROJECT' : 'NEW SERVICE';
+    createButton.hidden = isMessagesSection();
+    if (!isMessagesSection()) createButton.textContent = activeSection === 'projects' ? 'NEW PROJECT' : 'NEW SERVICE';
   }
 
   function clearEditor() {
@@ -181,6 +191,14 @@
     return payload;
   }
 
+  function formatMessageDate(value) {
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return 'DATE UNAVAILABLE';
+    return new Intl.DateTimeFormat('en-GB', {
+      day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false,
+    }).format(date).toUpperCase();
+  }
+
   function renderRecords() {
     recordList.replaceChildren();
     if (!records.length) {
@@ -196,20 +214,27 @@
       const content = document.createElement('div');
       const title = document.createElement('h2');
       title.className = 'record-title';
-      title.textContent = activeSection === 'projects' ? record.title : record.nameEn;
+      title.textContent = activeSection === 'projects' ? record.title : activeSection === 'services' ? record.nameEn : record.name;
       const meta = document.createElement('p');
       meta.className = 'record-meta';
       meta.textContent = activeSection === 'projects'
         ? `${record.category} · ${record.layout} · ORDER ${record.displayOrder}`
-        : `${record.nameTr} · ORDER ${record.displayOrder}`;
+        : activeSection === 'services'
+          ? `${record.nameTr} · ORDER ${record.displayOrder}`
+          : `${record.email} · ${record.service.replace(/-/g, ' ').toUpperCase()} · ${formatMessageDate(record.createdAt)}`;
       content.append(title, meta);
       const actions = document.createElement('div');
       actions.className = 'record-actions';
-      const edit = document.createElement('button');
-      edit.type = 'button'; edit.textContent = 'EDIT'; edit.addEventListener('click', () => openEditor(record));
-      const remove = document.createElement('button');
-      remove.type = 'button'; remove.textContent = 'DELETE'; remove.addEventListener('click', () => deleteRecord(record));
-      actions.append(edit, remove);
+      const primaryAction = document.createElement('button');
+      primaryAction.type = 'button';
+      primaryAction.textContent = isMessagesSection() ? 'VIEW' : 'EDIT';
+      primaryAction.addEventListener('click', () => isMessagesSection() ? openMessageDetail(record.id) : openEditor(record));
+      actions.appendChild(primaryAction);
+      if (!isMessagesSection()) {
+        const remove = document.createElement('button');
+        remove.type = 'button'; remove.textContent = 'DELETE'; remove.addEventListener('click', () => deleteRecord(record));
+        actions.appendChild(remove);
+      }
       card.append(content, actions);
       recordList.appendChild(card);
     });
@@ -219,7 +244,7 @@
     recordList.setAttribute('aria-busy', 'true');
     setMessage(pageMessage);
     try {
-      const data = await apiRequest(endpointForActiveSection());
+      const data = await apiRequest(endpointForActiveSection(), {}, isMessagesSection());
       records = Array.isArray(data) ? data : [];
       renderRecords();
     } catch (error) {
@@ -228,6 +253,65 @@
       handleRequestError(error);
     } finally {
       recordList.setAttribute('aria-busy', 'false');
+    }
+  }
+
+  function createMessageDetailItem(labelText, value, full = false) {
+    const wrapper = document.createElement('div');
+    wrapper.className = full ? 'detail-item full' : 'detail-item';
+    const label = document.createElement('p');
+    label.className = 'detail-label';
+    label.textContent = labelText;
+    const content = document.createElement('p');
+    content.className = 'detail-value';
+    content.textContent = value || '—';
+    wrapper.append(label, content);
+    return wrapper;
+  }
+
+  async function openMessageDetail(id) {
+    clearEditor();
+    editorTitle.textContent = 'MESSAGE DETAIL';
+    editor.hidden = false;
+    editorForm.setAttribute('aria-busy', 'true');
+    setMessage(pageMessage);
+    try {
+      const message = await apiRequest(`/api/contact/${id}`, {}, true);
+      const grid = document.createElement('div');
+      grid.className = 'form-grid message-detail';
+      grid.append(
+        createMessageDetailItem('NAME', message.name),
+        createMessageDetailItem('EMAIL', message.email),
+        createMessageDetailItem('COMPANY', message.company),
+        createMessageDetailItem('SERVICE', message.service.replace(/-/g, ' ').toUpperCase()),
+        createMessageDetailItem('CREATED AT', formatMessageDate(message.createdAt)),
+        createMessageDetailItem('MESSAGE', message.message, true),
+      );
+      const remove = document.createElement('button');
+      remove.type = 'button';
+      remove.className = 'primary-button danger-button';
+      remove.textContent = 'DELETE MESSAGE';
+      remove.addEventListener('click', () => deleteMessage(message));
+      editorForm.append(grid, remove);
+      editor.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } catch (error) {
+      clearEditor();
+      handleRequestError(error);
+    } finally {
+      editorForm.setAttribute('aria-busy', 'false');
+    }
+  }
+
+  async function deleteMessage(message) {
+    if (!window.confirm(`Delete the message from “${message.name}”? This cannot be undone.`)) return;
+    setMessage(pageMessage);
+    try {
+      await apiRequest(`/api/contact/${message.id}`, { method: 'DELETE' }, true);
+      clearEditor();
+      setMessage(pageMessage, 'Message deleted.', true);
+      await loadRecords();
+    } catch (error) {
+      handleRequestError(error);
     }
   }
 
